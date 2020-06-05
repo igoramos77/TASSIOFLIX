@@ -1,0 +1,108 @@
+{% include 'header.html' %}
+
+<div class="preloader bg-fade2">
+  <div class="lds-default">
+      <img src="{{url_for('static', filename='img/logo.svg', _external=True)}}" class="logo" alt="Compartilhar">
+  </div>
+</div>
+
+<div class="text-center">
+
+<!--  -->
+  <div id="demo" class="carousel slide carousel-fade" data-ride="carousel">
+    <ul class="carousel-indicators">
+      {% for i in moreViews %}
+        {% if (loop.index-1) == 0 %}
+          <li data-target="#demo" data-slide-to="{{(loop.index-1)}}" class="active"></li>
+        {% endif %}
+        {% if (loop.index-1) != 0 %}
+          <li data-target="#demo" data-slide-to="{{(loop.index-1)}}"></li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+
+    <div class="carousel-inner">
+    {% for i in moreViews %}
+      {% if (loop.index-1) == 0 %}
+        <div class="carousel-item active" style="background: url('static/img/{{i.getTumbnailVideo()}}');">
+      {% endif %}
+      {% if (loop.index-1) != 0 %}
+        <div class="carousel-item" style="background: url('static/img/{{i.getTumbnailVideo()}}');">
+      {% endif %}
+
+        <div class="carousel-caption">
+          <h3>{{i.getTitle()}}</h3>
+          <p>{{i.getSubTitle()}}</p>
+          <p class="top">TOP {{(loop.index)}} EM VISUALIZAÇÕES</p>
+        </div>   
+        <div class="bg-fade">
+          <div class="play-center">
+            <a class="play-button" href="/player/{{i.getId()}}"><i class="fa fa-play"></i></a>
+            <div class="spin">
+              <span class="spinner"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+<!--  -->
+</div>
+  
+<div class="container-fluid main">
+  <!--  -->
+  <section>
+    <h1>Mais curtidos</h1>
+    <ul>
+      {% for i in moreLikes %}
+        <li class="item0{{loop.index}}" onclick="window.location.href ='/player/{{i.getId()}}';">
+          <div class="img" style="background-image: url('static/img/{{i.getTumbnailVideo()}}')"><img src="static/img/{{i.getTumbnailVideo2()}}"/></div>
+          <div class="card">
+            <h3>{{i.getTitle()}}</h3>
+            <h6>{{i.getSubTitle()}}</h6>
+            <div class="info"> 
+              <div class="match">{{i.getLikes()}} Curtidas</div>
+              <div class="age">{{i.getClassification()}}</div>
+              <div class="dur">{{i.getDataCreate()}}</div>
+              <div class="view">{{i.getViews()}} visuzalizações</div>
+            </div>
+            <div class="tags"><span>{{i.getCategory()}}</span></div>
+          </div>
+        </li>
+      {% endfor %}
+      
+    </ul>
+  </section>
+  <!--  -->
+  <!--  -->
+  <section class="sc2">
+    <h1>Mais visualizados</h1>
+    <ul>
+      {% for i in moreViewsSlider %}
+        <li class="item0{{loop.index}}" onclick="window.location.href ='/player/{{i.getId()}}';">
+          <div class="img" style="background-image: url('static/img/{{i.getTumbnailVideo()}}')"><img src="static/img/{{i.getTumbnailVideo2()}}"/></div>
+          <div class="card">
+            <h3>{{i.getTitle()}}</h3>
+            <h6>{{i.getSubTitle()}}</h6>
+            <div class="info"> 
+              <div class="match">{{i.getViews()}} visuzalizações</div>
+              <div class="age">{{i.getClassification()}}</div>
+              <div class="dur">{{i.getDataCreate()}}</div>
+              <div class="view">{{i.getLikes()}} Curtidas</div>
+            </div>
+            <div class="tags"><span>{{i.getCategory()}}</span></div>
+          </div>
+        </li>
+      {% endfor %}
+      
+    </ul>
+  </section>
+  <!--  -->
+</div>
+
+{% include 'footer.html' %}
+
+<script src="{{url_for('static', filename='js/scripts.js', _external=True)}}"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <title>TASSIOFLIX</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="{{url_for('static', filename='css/bootstrap.min.css', _external=True)}}">
+  <script src="{{url_for('static', filename='js/jquery-3.5.1.min.js', _external=True)}}"></script>
+  <script src="{{url_for('static', filename='js/bootstrap.min.js', _external=True)}}"></script>
+
+  <link rel="stylesheet" href="{{url_for('static', filename='css/style.css', _external=True)}}">
+  <link rel="stylesheet" href="{{url_for('static', filename='css/media-queries.css', _external=True)}}">
+</head>
+<body>
+  <div id="modal-search" class="search-blur">
+    <div class="close-modal justify-content-right text-right">
+      <div class="close-btn">
+        x
+      </div>
+    </div>
+    <div class="container text-left justify-content-center ss">
+      <div class="jumbotron">
+        <h2>Pesquisar</h2>
+        <form role="search" method="get" id="searchform" action="#">
+          <div class="search-wrapper">
+            <input placeholder="O que você deseja buscar?" type="text" class="form-control search-input" value="" name="s" id="s">
+            <button type="submit" class="search-submit"><i class="fa fa-search"></i></button>
+          </div>
+        </form>
+        <div class="search-result">
+        </div>
+        <p class="none-result">Nenhum resultado encontrado</p>
+      </div>  
+      
+    </div>
+  </div>
+
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark">
+    <div class="container">
+
+      <a class="navbar-brand" href="{{url_for('home')}}">
+        <img class="logo" src="{{url_for('static', filename='img/logo.svg', _external=True)}}" alt="Logo">
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+
+        </ul>
+        <nav class="sub-nav">
+          <a class="share-icon" data-toggle="modal" data-target="#shareModal" href="#"><img src="{{url_for('static', filename='img/share.svg', _external=True)}}" class="share" alt="Compartilhar"></a>
+          <a class="search-icon" class="btn btn-primary" href="#"><svg class="svg-inline--fa fa-search fa-w-16 sub-nav-logo" aria-hidden="true" data-prefix="fas" data-icon="search" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"></path></svg><!-- <i class="fas fa-search sub-nav-logo"></i> --></a>
+        </nav>
+        ​<picture>
+          <img src="{{url_for('static', filename='img/igor.jpg', _external=True)}}" class="img-fluid avatar" alt="Igor Brown">
+        </picture>
+        <span class="user-name">Igor</span>
+      </div>
+      
+    </div>
+  </nav>
+
+<!-- share modal start -->
+<div class="modal" id="shareModal">
+  <div class="modal-dialog">
+    <div class="modal-content ctn2">
+
+      <!-- Modal body -->
+      <div class="modal-body" style="background: none;">
+        <h1>Compartilhar</h1>
+        <input type="text" class="form-control share-input">
+        <p class="shrr">O endreço acima já foi copiado para sua área de transferência 👌</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- share modal end -->
+
+
+<script>
+// search result show
+var searchInput = document.querySelector('#s');
+var searchResult = document.querySelector('.search-result');
+
+var searchTimeOut;
+
+$('#s').keyup(function() {
+  clearTimeout(searchTimeOut);
+
+  searchTimeOut = setTimeout(() => {
+    var inputValue = searchInput.value;
+
+    if (inputValue) {
+      var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState === 4) {
+          var videos = JSON.parse(xmlhttp.response);
+          var result = '';
+
+          if (videos.length) {
+            $('.none-result').fadeOut();
+            $('.search-input').addClass('b-radius');
+            $('.search-submit').addClass('b-radius2');
+            $('.search-result').addClass('d-block');
+
+            videos.forEach(video => {
+              result += `
+                <div>
+                  <p>
+                    <a href="/player/${video._id}"><img class="avatar" src="/static/img/${video._tumbnail_video}" alt="${video._title}">
+                      ${video._title} - ${video._sub_title}
+                    </a>
+                  </p>
+                </div>
+              `;
+            });
+          }
+          else {
+            $('.none-result').fadeIn();
+          }
+          
+          $('.search-result').html(result);
+
+        }
+      }
+      xmlhttp.open("GET", `/player/search?search=${inputValue}`, true);
+      xmlhttp.send();
+    } else {
+      $('.search-input').removeClass('b-radius');
+      $('.search-submit').removeClass('b-radius2');
+      $('.search-result').removeClass('d-block');
+      $('.none-result').fadeOut();
+    }
+  }, 500);
+});
+
+$('#s').on('keyup keypress', function(e) {
+  var keyCode = e.keyCode || e.which;
+  if (keyCode === 13) { 
+    e.preventDefault();
+    return false;
+  }
+});
+</script>

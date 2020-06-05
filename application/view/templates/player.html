@@ -1,0 +1,264 @@
+{% include 'header.html' %}      
+<link rel="stylesheet" href="{{url_for('static', filename='css/player-style.css', _external=True)}}">
+      
+      <div class="text-center">
+         <!--  -->
+         <div id="demo" class="carousel slide carousel-fade" data-ride="carousel">
+            <div class="carousel-inner">
+               <div class="carousel-item active" style="background: url('/static/img/{{video.getTumbnailVideo2()}}');">
+                  <div class="carousel-caption text-left container">
+                     <h3>{{video.getTitle()}}</h3>
+                     <p>{{video.getSubTitle()}}</p>
+                     <ul id="video-post-meta-list">
+                        <li id="video-post-meta-cat">
+                           <ul>
+                              <li><a href="#">{{video.getCategory()}}</a></li>
+                           </ul>
+                        </li>
+                        <li id="video-post-meta-reviews">
+                           <div class="average-rating-count-progression-studios"><span id="likess">{{video.getLikes()}}</span> Curtidas</div>
+                           <div class="clearfix"></div>
+                        </li>
+                        <li id="video-post-meta-year">{{video.getViews()}} Visualizações</li>
+                        <li id="video-post-meta-year">{{video.getDataCreate()}}</li>
+                        <li id="video-post-meta-rating"><span>{{video.getClassification()}}</span></li>
+                     </ul>
+                     <div class="no-padding">
+                        <div class="sinopse">
+                           <p>{{video.getDescription()}}</p>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="bg-fadex"></div>
+                  <div class="bg-fade">
+                     <div class="play-center">
+                        <a class="play-button2" href="#1" data-toggle="modal" data-target="#player-modal"><i class="fa fa-play"></i></a>
+                        <div class="spin">
+                           <span class="spinner"></span>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+              
+            </div>
+         </div>
+         <!--  -->
+      </div>
+
+      <div class="comments container no-padding cmm">
+      <!--  -->
+      <section>
+         <div class="container">
+            <div class="box">
+               <i class="fa fa-thumbs-up" id="like"></i>
+               <span id="like-counter">{{video.getLikes()}}</span>
+            </div>
+            <div class="box">
+               <i class="fa fa-heart" id="love"></i>
+               <span id="love-counter">0</span>
+            </div>
+            <div class="box">
+               <i class="fa fa-comment"></i>
+               <span id="comment-counter">{{countComments}}</span>
+            </div>
+            <div class="box">
+               <input type="text" placeholder="O que você achou de {{video.getTitle()}}?" name="comment" id="comment">
+               <button id="add-comment"><i class="fa fa-plus"></i></button>
+            </div>
+            <section class="comments" id="comments-container" style="display: block;">
+            {% for comment in comments %}
+               <div>
+                  <img src="/static/img/igor.jpg" class="img-fluid avatar avt-comment" style="height: 36px !important;width: 36px !important;" alt="Igor Brown">
+                  {{comment.getContent()}}
+                  <i class="fa fa-trash deleteComment" data-id="{{comment.getId()}}"></i>
+               </div>
+            {% endfor %}
+            </section>
+         </div>
+      </section>
+      <!--  -->
+      </div>
+
+      <!--  start modal player-->
+        <div class="modal fade" id="player-modal">
+          <div class="modal-dialog modal-lg modal-player">
+            <div class="modal-content">
+               <!-- Modal body -->
+               <div class="modal-body">
+               <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <video id="player" loop controls>
+                    <source src="/static/video/{{video.getVideoUrl()}}" type="video/mp4" />
+                </video>
+              </div>
+              
+              <!-- Modal footer -->
+              <div class="modal-footer">
+                 <div class="start">
+                    <h3>{{video.getTitle()}} - {{video.getSubTitle()}}</h3>
+                 </div>
+                 <div class="end">
+                    <div class="btn_wrap">
+                     <span>Compartilhar</span>
+                        <div class="container">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=example.org" id="fbs" target="_blank">
+                           <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a class="share-icon">
+                           <i class="fab fa fa-share"></i>
+                        </a>
+                        </div>
+                     </div>
+                 </div>
+                 
+
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      <!-- end modal player -->
+      
+      <!-- <script src="{{url_for('static', filename='js/comments.js', _external=True)}}"></script> -->
+      <script src="{{url_for('static', filename='js/scripts.js', _external=True)}}"></script>
+      <script>
+         /*global console*/
+var likeIcon = document.getElementById("like"),
+    likeCounter = likeIcon.nextElementSibling,
+    loveIcon = document.getElementById("love"),
+    loveCounter = loveIcon.nextElementSibling,
+    comment = document.getElementById("comment"),
+    addComment = comment.nextElementSibling,
+    commentsContainer = document.getElementById("comments-container"),
+    commentCounter = document.getElementById("comment-counter");
+    likef = document.getElementById("likess");
+
+likeIcon.addEventListener("click", function () {
+
+    this.classList.toggle("like");
+    var numberOfLikes = Number(likeCounter.textContent);
+    if (this.classList.contains("like")) {
+       
+         // like click toggle ajax
+         var likeValue = document.getElementById('likess');
+
+         var xmlhttp = new XMLHttpRequest();
+         var videoId = parseInt(`{{video.getId()}}`);
+         xmlhttp.open("GET", "/video/like?like=" + videoId + "", true);
+         xmlhttp.send();
+         console.log(videoId);
+         //end
+
+        numberOfLikes++;
+        likeCounter.textContent = numberOfLikes;
+        likef.textContent = numberOfLikes;
+    } else {
+         // like click toggle ajax
+         var likeValue = document.getElementById('likess');
+
+         var xmlhttp = new XMLHttpRequest();
+         var videoId = parseInt(`{{video.getId()}}`);
+         xmlhttp.open("GET", "/video/unlike?unlike=" + videoId + "", true);
+         xmlhttp.send();
+         console.log(videoId);
+         //end
+        numberOfLikes--;
+        likeCounter.textContent = numberOfLikes;
+        likef.textContent = numberOfLikes;
+    }
+});
+
+loveIcon.addEventListener("click", function () {
+    this.classList.toggle("love");
+    var numberOfLoves = Number(loveCounter.textContent);
+    if (this.classList.contains("love")) {
+        numberOfLoves++;
+        loveCounter.textContent = numberOfLoves;
+    } else {
+        numberOfLoves--;
+        loveCounter.textContent = numberOfLoves;
+    }
+});
+
+function removeComments() {
+   var deleteIcons = document.querySelectorAll(".container .comments div i");
+   var numberOfComments = Number(commentCounter.textContent)
+   for (let i = 0; i < deleteIcons.length; i++) {
+      
+      deleteIcons[i].addEventListener('click', function () {
+         var xmlhttp = new XMLHttpRequest();
+         var commentId = this.getAttribute('data-id');
+         var parentElement = this.parentElement;
+
+         xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState === 4) {
+               console.log('deletou')
+               parentElement.remove();
+               numberOfComments--;
+               commentCounter.textContent = numberOfComments;
+            }
+         }
+         
+         xmlhttp.open('DELETE', `/video/{{video.getId()}}/commentary/${commentId}`, true);
+         xmlhttp.send();
+      });
+   }
+}
+
+removeComments()
+
+addComment.addEventListener("click", function () {
+   console.log(comment.value);
+   
+
+   if(comment.value) {
+      var xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+         if (xmlhttp.readyState === 4) {
+            var res = JSON.parse(xmlhttp.response);
+            
+            var numberOfComments = Number(commentCounter.textContent),
+            date = new Date();
+            numberOfComments++;
+            commentCounter.textContent = numberOfComments;
+            commentsContainer.style.display = "block";
+            commentsContainer.innerHTML +=
+               `<div>
+                     <img src="/static/img/igor.jpg" class="img-fluid avatar avt-comment" style="height: 36px !important;width: 36px !important;" alt="Igor Brown">
+                     ${res.content}
+                  <i class="fa fa-trash" data-id="${res.id}"></i>
+               </div>`;
+            comment.value = "";
+            removeComments()
+         }
+      }
+
+      xmlhttp.open('POST', '/video/{{video.getId()}}/commentary', true);
+      xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xmlhttp.send(`content=${comment.value}`); 
+   }
+   else {
+      alert('Preencha o campo com seu comentário.');
+   }
+    /* ajax commentary end */
+   
+
+    setTimeout(() => {
+      window.scrollTo(0,document.body.scrollHeight);
+    }, 200);
+});
+
+
+// get input 
+var input = document.getElementById("comment");
+
+input.addEventListener("keyup", function(event) {
+  // number 13 is the "Enter" key on the keyboard
+  if (event.keyCode === 13) {
+    event.preventDefault();
+    document.getElementById("add-comment").click();
+  }
+});
+
+      </script>
+   </body>
+</html>
