@@ -563,7 +563,7 @@ li, li * {
   align-items: center;
 }
 .lds-default {
-  width: 150px;
+  width: auto;
   text-align: center;
 }
 .bg-fade2 {
